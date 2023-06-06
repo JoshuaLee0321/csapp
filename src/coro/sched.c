@@ -206,10 +206,14 @@ static struct coroutine *create_coroutine()
         return NULL;
 
     struct coroutine *coro = malloc(sizeof(struct coroutine));
-    if (unlikely(!coro))
+    if (unlikely(!coro)){
+        coro_stack_free(coro);
+        free(coro);
         return NULL;
+    }
 
     if (coro_stack_alloc(&coro->stack, sched.stack_bytes)) {
+        coro_stack_free(coro);
         free(coro);
         return NULL;
     }
