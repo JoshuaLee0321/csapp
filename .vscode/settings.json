@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "switch.h": "c",
+        "logger.h": "c",
+        "functional": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

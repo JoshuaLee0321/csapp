@@ -3,10 +3,14 @@
 
 #include "util/memcache.h"
 
+
+
 static inline void add_element(struct memcache *cache, void *element)
 {
     if (cache->curr < cache->cache_size) {
+        /*spin*/
         cache->elements[cache->curr++] = element;
+        /*spin*/
         return;
     }
 
@@ -14,8 +18,11 @@ static inline void add_element(struct memcache *cache, void *element)
 }
 
 static inline void *remove_element(struct memcache *cache)
-{
-    return cache->elements[--cache->curr];
+{   
+    /*spin*/
+    void *removed_elem = cache->elements[--cache->curr];
+    /*spin*/
+    return removed_elem;
 }
 
 static void free_pool(struct memcache *cache)
@@ -33,6 +40,8 @@ struct memcache *memcache_create(size_t obj_size, int max_cache_size)
     assert(max_cache_size >= 2);
 
     size_t size = sizeof(struct memcache) + max_cache_size * sizeof(void *);
+    assert(size > 0);
+
     struct memcache *cache = malloc(size);
     if (!cache)
         return NULL;
@@ -45,7 +54,7 @@ struct memcache *memcache_create(size_t obj_size, int max_cache_size)
     while (cache->curr < max_cache_size) {
         void *element = malloc(cache->obj_size);
         if (!element) {
-            free_pool(cache);
+            free_pool(cache); /* 若空間不夠 */
             return NULL;
         }
 

@@ -10,7 +10,8 @@ $(GIT_HOOKS):
 include common.mk
 
 CFLAGS = -I./src
-CFLAGS += -O2 -g
+# CFLAGS += -O2 -g
+CFLAGS += -O2 -g -fsanitize=address -static-libasan -fno-omit-frame-pointer
 CFLAGS += -std=gnu11 -Wall -W
 
 # Configurations
@@ -18,13 +19,14 @@ CFLAGS += -D CONF_FILE="\"conf/cserv.conf\""
 CFLAGS += -D MASTER_PID_FILE="\"conf/cserv.pid\""
 CFLAGS += -D MAX_WORKER_PROCESS=64
 
-LDFLAGS = -ldl
-
+# LDFLAGS = -ldl 
+LDFLAGS = -ldl -fsanitize=address -static-libasan -fno-omit-frame-pointer
+LOG_FILE=build.log
 # standard build rules
 .SUFFIXES: .o .c
 .c.o:
 	$(VECHO) "  CC\t$@\n"
-	$(Q)$(CC) -o $@ $(CFLAGS) -c -MMD -MF $@.d $<
+	$(Q)$(CC) -o $@ $(CFLAGS) -c -MMD -MF $@.d $< >> $(LOG_FILE) 2>&1
 
 OBJS = \
 	src/util/conf.o \
@@ -51,9 +53,10 @@ deps += $(OBJS:%.o=%.o.d)
 
 $(TARGET): $(OBJS)
 	$(VECHO) "  LD\t$@\n"
-	$(Q)$(CC) -o $@ $^ $(LDFLAGS)
+	$(Q)$(CC) -o $@ $^ $(LDFLAGS) >> $(LOG_FILE) 2>&1
 
 clean:
+	rm build.log
 	$(VECHO) "  Cleaning...\n"
 	$(Q)$(RM) $(TARGET) $(OBJS) $(deps)
 

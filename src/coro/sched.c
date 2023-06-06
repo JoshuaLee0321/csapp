@@ -3,10 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #include "coro/sched.h"
 #include "coro/switch.h"
 #include "event.h"
 #include "internal.h"
+#include "logger.h"
 #include "util/list.h"
 #include "util/memcache.h"
 #include "util/rbtree.h"
@@ -27,6 +29,7 @@ struct coroutine {
     coro_func func;
     void *args; /* associated with coroutine function */
 
+    pthread_mutex_t coro_lock;
     long long timeout; /* track the timeout of events */
     int active_by_timeout;
 };
@@ -120,13 +123,19 @@ static void add_to_timer_node(struct timer_node *tm_node,
     struct rb_node **newer = &tm_node->root.rb_node, *parent = NULL;
 
     while (*newer) {
-        struct coroutine *each = container_of(*newer, struct coroutine, node);
+        struct coroutine *each = container_of(*newer, struct coroutine, node); /* 整個 each 都有問題 */
+        pthread_mutex_lock(&each->coro_lock);
         int result = coro->coro_id - each->coro_id;
+        pthread_mutex_unlock(&each->coro_lock);
         parent = *newer;
 
-        newer = (result < 0) ? &(*newer)->rb_left : &(*newer)->rb_right;
+        if (result < 0) {
+            newer = &(*newer)->rb_left;
+        } else {
+            newer = &(*newer)->rb_right;
+        }
     }
-
+    
     rb_link_node(&coro->node, parent, newer);
     rb_insert_color(&coro->node, &tm_node->root);
 }
@@ -204,7 +213,7 @@ static struct coroutine *create_coroutine()
         free(coro);
         return NULL;
     }
-
+    pthread_mutex_init(&coro->coro_lock, NULL);
     coro->coro_id = ++sched.next_coro_id;
     sched.curr_coro_size++;
 
@@ -389,6 +398,8 @@ void schedule_init(size_t stack_kbytes, size_t max_coro_size)
 
     INIT_LIST_HEAD(&sched.idle);
     INIT_LIST_HEAD(&sched.active);
+
+
     sched.inactive = RB_ROOT;
     sched.cache = memcache_create(sizeof(struct timer_node), max_coro_size / 2);
     sched.policy = event_cycle;

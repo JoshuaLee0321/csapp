@@ -2,8 +2,12 @@
 #define CORO_SCHED_H
 
 #include <stdbool.h>
+#include "/usr/include/pthread.h"
 
+#include "util/spinlock.h"
 typedef void (*coro_func)(void *args);
+
+// spinlock_t lock;
 
 void schedule_cycle();
 int dispatch_coro(coro_func func, void *args);

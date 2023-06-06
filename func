@@ -1,0 +1,30 @@
+src/coro/sched.c:        int result = coro_id - coro->coro_id;
+src/coro/sched.c:    if (!find_in_timer(tm_node, coro->coro_id))
+src/coro/sched.c:    rb_erase(&coro->node, &tm_node->root);
+src/coro/sched.c:    coro_stack_free(&coro->stack);
+src/coro/sched.c:    struct timer_node *tm_node = find_timer_node(coro->timeout);
+src/coro/sched.c:        int result = coro->coro_id - each->coro_id;
+src/coro/sched.c:    rb_link_node(&coro->node, parent, newer);
+src/coro/sched.c:    rb_insert_color(&coro->node, &tm_node->root);
+src/coro/sched.c:        int timespan = coro->timeout - tm_node->timeout;
+src/coro/sched.c:    tmp->timeout = coro->timeout;
+src/coro/sched.c:    list_add_tail(&coro->list, &sched.idle);
+src/coro/sched.c:    list_add_tail(&coro->list, &sched.active);
+src/coro/sched.c:    list_add_tail(&coro->list, &sched.active);
+src/coro/sched.c:    list_add(&coro->list, &sched.active);
+src/coro/sched.c:    INIT_LIST_HEAD(&coro->list);
+src/coro/sched.c:    RB_CLEAR_NODE(&coro->node);
+src/coro/sched.c:    coro->timeout = 0;
+src/coro/sched.c:    coro->active_by_timeout = -1;
+src/coro/sched.c:    if (coro_stack_alloc(&coro->stack, sched.stack_bytes)) {
+src/coro/sched.c:    spin_lock_init(&coro->coro_lock);
+src/coro/sched.c:    coro->coro_id = ++sched.next_coro_id;
+src/coro/sched.c:        list_del(&coro->list);
+src/coro/sched.c:    list_del_init(&coro->list);
+src/coro/sched.c:        coro->active_by_timeout = 1;
+src/coro/sched.c:    coro->func(coro->args);
+src/coro/sched.c:    coro->func = func, coro->args = args;
+src/coro/sched.c:    coro_stack_init(&coro->ctx, &coro->stack, coro_routine_proxy, coro);
+src/coro/sched.c:    coro->timeout = get_curr_mseconds() + milliseconds;
+src/coro/sched.c:    coro->active_by_timeout = -1;
+src/coro/sched.c:    coro->active_by_timeout = -1;

@@ -1,6 +1,9 @@
 #ifndef UTIL_MEMCACHE_H
 #define UTIL_MEMCACHE_H
 
+#include <pthread.h>
+
+#include "util/spinlock.h"
 struct memcache {
     void **elements;
     size_t obj_size; /* object size*/
