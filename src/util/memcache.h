@@ -9,6 +9,7 @@ struct memcache {
     size_t obj_size; /* object size*/
     int cache_size;  /* pool size */
     int curr;        /* current available element count */
+    spinlock_t lock;
 };
 
 struct memcache *memcache_create(size_t obj_size, int max_cache_size);

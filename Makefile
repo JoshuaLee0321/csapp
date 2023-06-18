@@ -10,8 +10,10 @@ $(GIT_HOOKS):
 include common.mk
 
 CFLAGS = -I./src
-# CFLAGS += -O2 -g
-CFLAGS += -O2 -g -fsanitize=address -static-libasan -fno-omit-frame-pointer
+# CFLAGS += -S -O2 -g
+# CFLAGS += -g
+CFLAGS += -O2 -g
+# CFLAGS += -g -O2 -fsanitize=address -static-libasan
 CFLAGS += -std=gnu11 -Wall -W
 
 # Configurations
@@ -19,8 +21,8 @@ CFLAGS += -D CONF_FILE="\"conf/cserv.conf\""
 CFLAGS += -D MASTER_PID_FILE="\"conf/cserv.pid\""
 CFLAGS += -D MAX_WORKER_PROCESS=64
 
-# LDFLAGS = -ldl 
-LDFLAGS = -ldl -fsanitize=address -static-libasan -fno-omit-frame-pointer
+LDFLAGS = -ldl 
+# LDFLAGS = -ldl -fsanitize=address -static-libasan
 LOG_FILE=build.log
 # standard build rules
 .SUFFIXES: .o .c
@@ -54,7 +56,14 @@ deps += $(OBJS:%.o=%.o.d)
 $(TARGET): $(OBJS)
 	$(VECHO) "  LD\t$@\n"
 	$(Q)$(CC) -o $@ $^ $(LDFLAGS) >> $(LOG_FILE) 2>&1
+# for valgrind 
+ARGS = -s
+ARGS += --vgdb=full --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt
 
+
+
+val: 
+	sudo valgrind $(ARGS) ./cserv start
 clean:
 	rm build.log
 	$(VECHO) "  Cleaning...\n"

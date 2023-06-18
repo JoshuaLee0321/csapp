@@ -8,7 +8,7 @@ __asm__(
     ".text\n"
     ".globl context_switch\n"
     "context_switch:\n"
-#if defined(__x86_64__)
+#if defined(__x86_64__) // 把 stack 中前六個元素與目前暫存的元素互相交換
 #define NUM_SAVED 6
     "push %rbp\n"
     "push %rbx\n"
@@ -37,9 +37,9 @@ __asm__(
     ".text\n"
     "coro_routine_entry:\n"
 #if defined(__x86_64__)
-    "pop %rdi\n"
-    "pop %rcx\n"
-    "call *%rcx\n"
+    "pop %rdi\n"    // pop 出 stack 之後存入 rdi
+    "pop %rcx\n"    // pop 出 stack 之後存入 rcx
+    "call *%rcx\n"  // 呼叫 rcx 站存中存的 function
 #else
 #error "unsupported architecture"
 #endif
@@ -68,7 +68,9 @@ int coro_stack_alloc(struct coro_stack *stack, size_t size_bytes)
     if (stack->ptr == (void *) -1)
         return -1;
 
-    mprotect(stack->ptr, get_page_size(), PROT_NONE);
+    // mprotect(stack->ptr, get_page_size(), PROT_NONE); /*這邊就不能訪問了*/
+    mprotect(stack->ptr, get_page_size(), PROT_READ | PROT_WRITE);
+    /* 更改成 PROT_READ 就可以讓別人讀取但不可以寫 */
     stack->ptr = (void *) ((char *) stack->ptr + size_bytes);
 
     return 0;

@@ -1,0 +1,28 @@
+util/memcache.c:4:10: fatal error: util/memcache.h: No such file or directory
+    4 | #include "util/memcache.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.
+util/memcache.c:4:10: fatal error: util/memcache.h: No such file or directory
+    4 | #include "util/memcache.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.
+util/memcache.c:4:10: fatal error: util/memcache.h: No such file or directory
+    4 | #include "util/memcache.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.
+util/memcache.c:4:10: fatal error: util/memcache.h: No such file or directory
+    4 | #include "util/memcache.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.
+util/memcache.c:4:10: fatal error: util/memcache.h: No such file or directory
+    4 | #include "util/memcache.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.
+util/memcache.c:4:10: fatal error: util/memcache.h: No such file or directory
+    4 | #include "util/memcache.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.
+util/memcache.c:4:10: fatal error: util/memcache.h: No such file or directory
+    4 | #include "util/memcache.h"
+      |          ^~~~~~~~~~~~~~~~~
+compilation terminated.

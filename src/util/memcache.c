@@ -7,22 +7,30 @@
 
 static inline void add_element(struct memcache *cache, void *element)
 {
+    spin_lock(&cache->lock);
     if (cache->curr < cache->cache_size) {
-        /*spin*/
         cache->elements[cache->curr++] = element;
-        /*spin*/
+        spin_unlock(&cache->lock);
         return;
-    }
-
+    } else {
+    spin_unlock(&cache->lock);
     free(element);
+    }
+    
 }
 
 static inline void *remove_element(struct memcache *cache)
 {   
-    /*spin*/
-    void *removed_elem = cache->elements[--cache->curr];
-    /*spin*/
-    return removed_elem;
+    spin_lock(&cache->lock);
+    if (cache->curr > 0) {
+        void *removed_elem = cache->elements[--cache->curr];
+        spin_unlock(&cache->lock);
+        return removed_elem;
+    } else {
+        spin_unlock(&cache->lock);
+        return NULL;
+    }
+
 }
 
 static void free_pool(struct memcache *cache)
@@ -50,7 +58,9 @@ struct memcache *memcache_create(size_t obj_size, int max_cache_size)
     cache->obj_size = obj_size, cache->cache_size = max_cache_size;
     cache->curr = 0;
 
+    spin_lock_init(&cache->lock);
     max_cache_size >>= 2;
+    assert(obj_size > 0 && max_cache_size >= 2);
     while (cache->curr < max_cache_size) {
         void *element = malloc(cache->obj_size);
         if (!element) {

@@ -114,6 +114,7 @@ static inline void remove_from_inactive_tree(struct coroutine *coro)
     if (RB_EMPTY_ROOT(&tm_node->root)) {
         rb_erase(&tm_node->node, &sched.inactive);
         memcache_free(sched.cache, tm_node);
+        // coro_stack_free(&coro->stack);
     }
 }
 
@@ -124,11 +125,10 @@ static void add_to_timer_node(struct timer_node *tm_node,
 
     while (*newer) {
         struct coroutine *each = container_of(*newer, struct coroutine, node); /* 整個 each 都有問題 */
-        pthread_mutex_lock(&each->coro_lock);
-        int result = coro->coro_id - each->coro_id;
-        pthread_mutex_unlock(&each->coro_lock);
-        parent = *newer;
 
+        int result = coro->coro_id - each->coro_id;
+        parent = *newer;
+    
         if (result < 0) {
             newer = &(*newer)->rb_left;
         } else {
@@ -295,6 +295,7 @@ static void check_timeout_coroutine()
 {
     struct timer_node *node;
     long long now = get_curr_mseconds();
+
 
     while ((node = get_recent_timer_node())) {
         if (now < node->timeout)

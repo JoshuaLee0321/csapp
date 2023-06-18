@@ -1,0 +1,51 @@
+src/http/parse.c: In function ‘http_parse_request_line’:
+src/http/parse.c:214:19: warning: this statement may fall through [-Wimplicit-fallthrough=]
+  214 |             state = S_host;
+      |             ~~~~~~^~~~~~~~
+src/http/parse.c:215:9: note: here
+  215 |         case S_host:
+      |         ^~~~
+src/http/parse.c:219:55: warning: this statement may fall through [-Wimplicit-fallthrough=]
+  219 |             if ((ch >= '0' && ch <= '9') || ch == '.' || ch == '-')
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+src/http/parse.c:221:9: note: here
+  221 |         case S_host_end:
+      |         ^~~~
+src/coro/sched.c: In function ‘create_coroutine’:
+src/coro/sched.c:210:25: warning: passing argument 1 of ‘coro_stack_free’ from incompatible pointer type [-Wincompatible-pointer-types]
+  210 |         coro_stack_free(coro);
+      |                         ^~~~
+      |                         |
+      |                         struct coroutine *
+In file included from src/coro/sched.c:8:
+./src/coro/switch.h:33:41: note: expected ‘struct coro_stack *’ but argument is of type ‘struct coroutine *’
+   33 | void coro_stack_free(struct coro_stack *stack);
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~~
+src/coro/sched.c:216:25: warning: passing argument 1 of ‘coro_stack_free’ from incompatible pointer type [-Wincompatible-pointer-types]
+  216 |         coro_stack_free(coro);
+      |                         ^~~~
+      |                         |
+      |                         struct coroutine *
+In file included from src/coro/sched.c:8:
+./src/coro/switch.h:33:41: note: expected ‘struct coro_stack *’ but argument is of type ‘struct coroutine *’
+   33 | void coro_stack_free(struct coro_stack *stack);
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~~
+src/coro/sched.c: In function ‘create_coroutine’:
+src/coro/sched.c:210:25: warning: passing argument 1 of ‘coro_stack_free’ from incompatible pointer type [-Wincompatible-pointer-types]
+  210 |         coro_stack_free(coro);
+      |                         ^~~~
+      |                         |
+      |                         struct coroutine *
+In file included from src/coro/sched.c:8:
+./src/coro/switch.h:33:41: note: expected ‘struct coro_stack *’ but argument is of type ‘struct coroutine *’
+   33 | void coro_stack_free(struct coro_stack *stack);
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~~
+src/coro/sched.c:216:25: warning: passing argument 1 of ‘coro_stack_free’ from incompatible pointer type [-Wincompatible-pointer-types]
+  216 |         coro_stack_free(coro);
+      |                         ^~~~
+      |                         |
+      |                         struct coroutine *
+In file included from src/coro/sched.c:8:
+./src/coro/switch.h:33:41: note: expected ‘struct coro_stack *’ but argument is of type ‘struct coroutine *’
+   33 | void coro_stack_free(struct coro_stack *stack);
+      |                      ~~~~~~~~~~~~~~~~~~~^~~~~

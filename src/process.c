@@ -146,7 +146,7 @@ static int worker_accept()
     return connfd;
 }
 
-static void worker_accept_cycle(void *args __UNUSED)
+static __attribute((no_sanitize("address"))) void worker_accept_cycle(void *args __UNUSED)
 {
     for (;;) {
         if (unlikely(g_shall_stop)) {
