@@ -11,8 +11,8 @@ include common.mk
 
 CFLAGS = -I./src
 # CFLAGS += -S -O2 -g
-# CFLAGS += -g
-CFLAGS += -O2 -g
+CFLAGS += -g
+# CFLAGS += -O2 -g
 # CFLAGS += -g -O2 -fsanitize=address -static-libasan
 CFLAGS += -std=gnu11 -Wall -W
 
@@ -60,6 +60,23 @@ $(TARGET): $(OBJS)
 ARGS = -s
 ARGS += --vgdb=full --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt
 
+
+coro_test:
+	echo $(TARGET)
+	echo +=++++++++++++++++++++++++++++
+
+	echo $(OBJS)
+	echo +++++++++++++++++++++++++++++++
+	echo $(VECHO) 
+	echo +++++++++++++++++++++++++++++++
+	echo "  LD\t$@\n"
+	echo +++++++++++++++++++++++++++++++
+	echo $(Q)
+	echo +++++++++++++++++++++++++++++++
+	echo $(CC)
+	echo +++++++++++++++++++++++++++++++
+	echo $@ $^ $(LDFLAGS)
+	echo +++++++++++++++++++++++++++++++
 
 
 val: 

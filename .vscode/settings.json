@@ -5,7 +5,9 @@
         "functional": "c",
         "system.h": "c",
         "sched.h": "c",
-        "event.h": "c"
+        "event.h": "c",
+        "internal.h": "c",
+        "memcache.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

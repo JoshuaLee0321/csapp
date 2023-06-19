@@ -9,30 +9,45 @@ $(GIT_HOOKS):
 
 include ../common.mk
 
-CFLAGS = -I./src
-# CFLAGS += -S -O2 -g
+CFLAGS = -I./# CFLAGS += -S -O2 -g
+# CFLAGS += -g
 # CFLAGS += -O2 -g
 CFLAGS += -g -O2 -fsanitize=address -static-libasan
 CFLAGS += -std=gnu11 -Wall -W
 
+# Configurations
+CFLAGS += -D CONF_FILE="\"conf/cserv.conf\""
+CFLAGS += -D MASTER_PID_FILE="\"conf/cserv.pid\""
+CFLAGS += -D MAX_WORKER_PROCESS=64
 
 # LDFLAGS = -ldl 
 LDFLAGS = -ldl -fsanitize=address -static-libasan
 LOG_FILE=build.log
 # standard build rules
-
 .SUFFIXES: .o .c
 .c.o:
 	$(VECHO) "  CC\t$@\n"
-	$(Q)$(CC) -o $@ $(CFLAGS) -c -MMD -MF $@.d
+	$(Q)$(CC) -o $@ $(CFLAGS) -c -MMD -MF $@.d $< 
 
 OBJS = \
+	util/conf.o \
+	util/hashtable.o \
+	util/shm.o \
 	util/memcache.o \
 	util/rbtree.o \
 	util/system.o \
+	http/http.o \
+	http/parse.o \
+	http/request.o \
+	http/response.o \
 	coro/switch.o \
 	coro/sched.o \
+	env.o \
 	event.o \
+	signal.o \
+	logger.o \
+	process.o \
+	syscall_hook.o \
 	test.o
 
 deps += $(OBJS:%.o=%.o.d)
@@ -43,6 +58,7 @@ $(TARGET): $(OBJS)
 # for valgrind 
 ARGS = -s
 ARGS += --vgdb=full --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt
+
 
 
 

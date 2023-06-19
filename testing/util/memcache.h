@@ -3,7 +3,7 @@
 
 #include <pthread.h>
 
-#include "util/spinlock.h"
+#include "spinlock.h"
 struct memcache {
     void **elements;
     size_t obj_size; /* object size*/

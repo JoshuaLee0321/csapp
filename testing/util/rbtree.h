@@ -2,7 +2,7 @@
 #define UTIL_RBTREE_H
 
 #include "internal.h"
-
+#include "str.h"
 struct rb_node {
     unsigned long rb_parent_color;
 #define RB_RED 0

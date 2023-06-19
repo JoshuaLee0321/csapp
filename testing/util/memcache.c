@@ -60,6 +60,7 @@ struct memcache *memcache_create(size_t obj_size, int max_cache_size)
 
     spin_lock_init(&cache->lock);
     max_cache_size >>= 2;
+    // printf("obj: %d cache: %d", obj_size, max_cache_size)
     assert(obj_size > 0 && max_cache_size >= 2);
     while (cache->curr < max_cache_size) {
         void *element = malloc(cache->obj_size);

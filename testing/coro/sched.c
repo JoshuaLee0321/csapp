@@ -245,9 +245,10 @@ static inline struct coroutine *get_active_coroutine()
         return NULL;
 
     coro = list_entry(sched.active.next, struct coroutine, list);
+
     list_del_init(&coro->list);
 
-    return coro;
+    return coro;   
 }
 
 static inline void run_active_coroutine()
@@ -345,6 +346,7 @@ void schedule_timeout(int milliseconds)
 
     coro->timeout = get_curr_mseconds() + milliseconds;
     move_to_inactive_tree(coro);
+    coro_stack_free(&coro->stack);
     coroutine_switch(sched.current, &sched.main_coro);
 }
 

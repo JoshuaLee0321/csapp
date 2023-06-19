@@ -64,13 +64,14 @@ int coro_stack_alloc(struct coro_stack *stack, size_t size_bytes)
     size_bytes += get_page_size();
 
     stack->ptr = mmap(NULL, size_bytes, PROT_READ | PROT_WRITE | PROT_EXEC,
-                      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+                      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (stack->ptr == (void *) -1)
         return -1;
 
-    // mprotect(stack->ptr, get_page_size(), PROT_NONE); /*這邊就不能訪問了*/
-    mprotect(stack->ptr, get_page_size(), PROT_READ | PROT_WRITE);
+    mprotect(stack->ptr, get_page_size(), PROT_NONE); /*這邊就不能訪問了*/
+    // mprotect(stack->ptr, get_page_size(), PROT_READ | PROT_WRITE);
     /* 更改成 PROT_READ 就可以讓別人讀取但不可以寫 */
+    
     stack->ptr = (void *) ((char *) stack->ptr + size_bytes);
 
     return 0;
