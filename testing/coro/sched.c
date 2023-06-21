@@ -4,56 +4,17 @@
 #include <string.h>
 
 #include "coro/sched.h"
-#include "coro/switch.h"
-#include "event.h"
-#include "internal.h"
-#include "util/list.h"
-#include "util/memcache.h"
-#include "util/rbtree.h"
-#include "util/system.h"
+// #include "coro/switch.h"
+// #include "event.h"
+// #include "internal.h"
+// #include "util/list.h"
+// #include "util/memcache.h"
+// #include "util/rbtree.h"
+// #include "util/system.h"
 
-struct timer_node {
-    struct rb_node node; /* inactive */
-    struct rb_root root; /* coroutines with the same timeout */
-    long long timeout;   /* unit: milliseconds */
-};
+extern struct coro_schedule sched;
 
-struct coroutine {
-    struct list_head list; /* free_pool or active linked list */
-    struct rb_node node;
-    int coro_id;
-    struct context ctx;
-    struct coro_stack stack;
-    coro_func func;
-    void *args; /* associated with coroutine function */
-
-    long long timeout; /* track the timeout of events */
-    int active_by_timeout;
-};
-
-/* sched policy, if timeout == -1, sched policy can wait forever */
-typedef void (*sched_policy_t)(int timeout /* in milliseconds */);
-
-struct coro_schedule {
-    size_t max_coro_size;
-    size_t curr_coro_size;
-
-    int next_coro_id;
-
-    size_t stack_bytes;
-    struct coroutine main_coro;
-    struct coroutine *current;
-
-    struct list_head idle, active;
-    struct rb_root inactive; /* waiting coroutines */
-    struct memcache *cache;  /* caching timer node */
-
-    sched_policy_t policy;
-};
-
-static struct coro_schedule sched;
-
-static struct coroutine *find_in_timer(struct timer_node *tm_node, int coro_id)
+struct coroutine *find_in_timer(struct timer_node *tm_node, int coro_id)
 {
     struct rb_node *each = tm_node->root.rb_node;
 
@@ -72,16 +33,15 @@ static struct coroutine *find_in_timer(struct timer_node *tm_node, int coro_id)
     return NULL;
 }
 
-static inline void remove_from_timer_node(struct timer_node *tm_node,
+void remove_from_timer_node(struct timer_node *tm_node,
                                           struct coroutine *coro)
 {
     if (!find_in_timer(tm_node, coro->coro_id))
         return;
-
     rb_erase(&coro->node, &tm_node->root);
 }
 
-static struct timer_node *find_timer_node(long long timeout)
+struct timer_node *find_timer_node(long long timeout)
 {
     struct rb_node *each = sched.inactive.rb_node;
 
@@ -100,7 +60,7 @@ static struct timer_node *find_timer_node(long long timeout)
     return NULL;
 }
 
-static inline void remove_from_inactive_tree(struct coroutine *coro)
+void remove_from_inactive_tree(struct coroutine *coro)
 {
     struct timer_node *tm_node = find_timer_node(coro->timeout);
     if (!tm_node)
@@ -114,9 +74,10 @@ static inline void remove_from_inactive_tree(struct coroutine *coro)
     }
 }
 
-static void add_to_timer_node(struct timer_node *tm_node,
+void add_to_timer_node(struct timer_node *tm_node,
                               struct coroutine *coro)
 {
+
     struct rb_node **newer = &tm_node->root.rb_node, *parent = NULL;
 
     while (*newer) {
@@ -130,11 +91,9 @@ static void add_to_timer_node(struct timer_node *tm_node,
     rb_link_node(&coro->node, parent, newer);
     rb_insert_color(&coro->node, &tm_node->root);
 }
-
-static __attribute((no_sanitize("address"))) void move_to_inactive_tree(struct coroutine *coro)
+void move_to_inactive_tree(struct coroutine *coro)
 {
     struct rb_node **newer = &sched.inactive.rb_node, *parent = NULL;
-
     while (*newer) {
         struct timer_node *tm_node =
             container_of(*newer, struct timer_node, node);
@@ -154,37 +113,37 @@ static __attribute((no_sanitize("address"))) void move_to_inactive_tree(struct c
     struct timer_node *tmp = memcache_alloc(sched.cache);
     if (unlikely(!tmp)) /* still in active list */
         return;
-
+    tmp->root = RB_ROOT;
     tmp->timeout = coro->timeout;
-    
+
     add_to_timer_node(tmp, coro);
     rb_link_node(&tmp->node, parent, newer);
     rb_insert_color(&tmp->node, &sched.inactive);
 }
 
-static inline void move_to_idle_list_direct(struct coroutine *coro)
+void move_to_idle_list_direct(struct coroutine *coro)
 {
     list_add_tail(&coro->list, &sched.idle);
 }
 
-static inline void move_to_active_list_tail_direct(struct coroutine *coro)
+void move_to_active_list_tail_direct(struct coroutine *coro)
 {
     list_add_tail(&coro->list, &sched.active);
 }
 
-static inline void move_to_active_list_tail(struct coroutine *coro)
+void move_to_active_list_tail(struct coroutine *coro)
 {
     remove_from_inactive_tree(coro);
     list_add_tail(&coro->list, &sched.active);
 }
 
-static inline void move_to_active_list_head(struct coroutine *coro)
+void move_to_active_list_head(struct coroutine *coro)
 {
     remove_from_inactive_tree(coro);
     list_add(&coro->list, &sched.active);
 }
 
-static inline void coroutine_init(struct coroutine *coro)
+void coroutine_init(struct coroutine *coro)
 {
     INIT_LIST_HEAD(&coro->list);
     RB_CLEAR_NODE(&coro->node);
@@ -192,7 +151,7 @@ static inline void coroutine_init(struct coroutine *coro)
     coro->active_by_timeout = -1;
 }
 
-static struct coroutine *create_coroutine()
+struct coroutine *create_coroutine()
 {
     if (unlikely(sched.curr_coro_size == sched.max_coro_size))
         return NULL;
@@ -212,7 +171,7 @@ static struct coroutine *create_coroutine()
     return coro;
 }
 
-static struct coroutine *get_coroutine()
+struct coroutine *get_coroutine()
 {
     struct coroutine *coro;
 
@@ -231,13 +190,13 @@ static struct coroutine *get_coroutine()
     return coro;
 }
 
-static void coroutine_switch(struct coroutine *curr, struct coroutine *next)
+void coroutine_switch(struct coroutine *curr, struct coroutine *next)
 {
     sched.current = next;
     context_switch(&curr->ctx, &next->ctx);
 }
 
-static inline struct coroutine *get_active_coroutine()
+struct coroutine *get_active_coroutine()
 {
     struct coroutine *coro;
 
@@ -251,7 +210,7 @@ static inline struct coroutine *get_active_coroutine()
     return coro;   
 }
 
-static inline void run_active_coroutine()
+void run_active_coroutine()
 {
     struct coroutine *coro;
 
@@ -259,7 +218,7 @@ static inline void run_active_coroutine()
         coroutine_switch(&sched.main_coro, coro);
 }
 
-static inline struct timer_node *get_recent_timer_node()
+struct timer_node *get_recent_timer_node()
 {
     struct rb_node *recent = rb_first(&sched.inactive);
     if (!recent)
@@ -268,7 +227,7 @@ static inline struct timer_node *get_recent_timer_node()
     return container_of(recent, struct timer_node, node);
 }
 
-static inline void timeout_coroutine_handler(struct timer_node *node)
+void timeout_coroutine_handler(struct timer_node *node)
 {
     struct rb_node *recent;
 
@@ -280,7 +239,7 @@ static inline void timeout_coroutine_handler(struct timer_node *node)
     }
 }
 
-static void check_timeout_coroutine()
+void check_timeout_coroutine()
 {
     struct timer_node *node;
     long long now = get_curr_mseconds();
@@ -295,7 +254,7 @@ static void check_timeout_coroutine()
     }
 }
 
-static inline int get_recent_timespan()
+int get_recent_timespan()
 {
     struct timer_node *node = get_recent_timer_node();
     if (!node)
@@ -316,8 +275,8 @@ void schedule_cycle()
     }
 }
 
-static __attribute((no_sanitize("address")))
-        __attribute__((__regparm__(1))) void coro_routine_proxy(void *args)
+
+void  __attribute__((__regparm__(1))) coro_routine_proxy(void *args)
 {
     struct coroutine *coro = args;
 
@@ -346,8 +305,8 @@ void schedule_timeout(int milliseconds)
 
     coro->timeout = get_curr_mseconds() + milliseconds;
     move_to_inactive_tree(coro);
-    coro_stack_free(&coro->stack);
     coroutine_switch(sched.current, &sched.main_coro);
+    coro_stack_free(&coro->stack);
 }
 
 bool is_wakeup_by_timeout()

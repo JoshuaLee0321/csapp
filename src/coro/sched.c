@@ -164,6 +164,7 @@ static void move_to_inactive_tree(struct coroutine *coro)
     if (unlikely(!tmp)) /* still in active list */
         return;
 
+    tmp->root = RB_ROOT;
     tmp->timeout = coro->timeout;
     add_to_timer_node(tmp, coro);
     rb_link_node(&tmp->node, parent, newer);

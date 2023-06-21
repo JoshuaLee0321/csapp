@@ -80,10 +80,12 @@ void memcache_destroy(struct memcache *cache)
     free_pool(cache);
 }
 
+
 void *memcache_alloc(struct memcache *cache)
 {
     return (cache->curr) ? remove_element(cache) : malloc(cache->obj_size);
 }
+
 
 void memcache_free(struct memcache *cache, void *element)
 {

@@ -14,20 +14,32 @@
 #include "env.h"
 #include "coro/sched.h"
 #include "coro/switch.h"
- 
+struct coro_schedule sched;
 
 void NULL_func(void *ARGS __UNUSED)
 {
+    for(int i = 0; i< 100; i++)
+        continue;
+
     return;
 }
 int main()
 {
-    // schedule_init(1, 1024);
-    // event_loop_init(1024);
-    // dispatch_coro(NULL_func, NULL);
+    schedule_init(10, 1024);
+    event_loop_init(1024);
+    int tmp = dispatch_coro(NULL_func, NULL);
+    printf("dispatch Done errno: %d\n", tmp);
+    struct coroutine *coro = create_coroutine();
+    // move_to_active_list_head(coro);
+    get_coroutine();
 
-    // schedule_cycle();
-    master_process_cycle();
-    worker_process_cycle();
+    run_active_coroutine();
+    dispatch_coro(NULL_func, NULL);
+    check_timeout_coroutine();
+    // start treating tree
+    // coroutine_switch(sched.current, &sched.main_coro);
+    move_to_inactive_tree(coro);
+    // remove_from_inactive_tree(coro);
+
     return 0;
 }
