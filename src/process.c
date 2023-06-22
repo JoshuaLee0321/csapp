@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "coro/sched.h"
+#include "coro/switch.h"
 #include "env.h"
 #include "event.h"
 #include "internal.h"
@@ -146,7 +147,7 @@ static int worker_accept()
     return connfd;
 }
 
-static __attribute((no_sanitize("address"))) void worker_accept_cycle(void *args __UNUSED)
+static void worker_accept_cycle(void *args __UNUSED)
 {
     for (;;) {
         if (unlikely(g_shall_stop)) {
@@ -187,6 +188,12 @@ void worker_process_cycle()
     schedule_cycle();
 }
 
+// static int kill_proc_cleanup(pid_t pid, int signo)
+// {
+//     int res = kill(pid, signo);
+//     schedule_free_handler();
+//     return res;
+// }
 static void send_signal_to_workers(int signo)
 {
     for (int i = 0; i < g_worker_processes; i++) {
@@ -196,6 +203,7 @@ static void send_signal_to_workers(int signo)
                 ERR("Failed to send signal %d to child pid:%d", signo, p->pid);
         }
     }
+    // schedule_free_handler();
 }
 
 void master_process_cycle()
@@ -243,8 +251,10 @@ void worker_exit_handler(int pid)
 {
     for (int i = 0; i < g_worker_processes; i++) {
         struct process *p = &worker[i];
-        if (p->pid == pid)
+        if (p->pid == pid){
             p->pid = INVALID_PID;
+        }
+
     }
 
     /* If worker process exits without receiving the signal, it means
@@ -252,7 +262,7 @@ void worker_exit_handler(int pid)
      */
     if (!g_shall_stop && !g_shall_exit)
         shall_create_worker = true;
-
+    
     if (worker_empty() && (g_shall_stop || g_shall_exit))
         all_workers_exit = true;
 }

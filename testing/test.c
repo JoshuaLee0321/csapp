@@ -38,7 +38,9 @@ int main()
     check_timeout_coroutine();
     // start treating tree
     // coroutine_switch(sched.current, &sched.main_coro);
-    move_to_inactive_tree(coro);
+    // schedule_cycle();
+    // schedule_free_handler();
+
     // remove_from_inactive_tree(coro);
 
     return 0;

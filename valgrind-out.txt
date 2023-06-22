@@ -1,0 +1,119 @@
+==6350== Memcheck, a memory error detector
+==6350== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==6350== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
+==6350== Command: ./cserv start
+==6350== Parent PID: 6349
+==6350== 
+--6350-- 
+--6350-- Valgrind options:
+--6350--    -s
+--6350--    --vgdb=full
+--6350--    --leak-check=full
+--6350--    --show-leak-kinds=all
+--6350--    --track-origins=yes
+--6350--    --verbose
+--6350--    --log-file=valgrind-out.txt
+--6350-- Contents of /proc/version:
+--6350--   Linux version 5.19.0-45-generic (buildd@lcy02-amd64-117) (x86_64-linux-gnu-gcc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #46~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jun 7 15:06:04 UTC 20
+--6350-- 
+--6350-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx-avx2-bmi-f16c-rdrand-rdseed
+--6350-- Page sizes: currently 4096, max supported 4096
+--6350-- Valgrind library directory: /usr/libexec/valgrind
+--6350-- Reading syms from /home/joshua/linux2023/cserv/cserv
+--6350-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+--6350--   Considering /usr/lib/debug/.build-id/61/ef896a699bb1c2e4e231642b2e1688b2f1a61e.debug ..
+--6350--   .. build-id is valid
+--6350-- Reading syms from /usr/libexec/valgrind/memcheck-amd64-linux
+--6350--    object doesn't have a symbol table
+--6350--    object doesn't have a dynamic symbol table
+--6350-- Scheduler: using generic scheduler lock implementation.
+--6350-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==6350== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-6350-by-root-on-???
+==6350== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-6350-by-root-on-???
+==6350== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-6350-by-root-on-???
+==6350== 
+==6350== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==6350== don't want to do, unless you know exactly what you're doing,
+==6350== or are doing some strange experiment):
+==6350==   /usr/bin/vgdb --pid=6350 ...command...
+==6350== 
+==6350== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==6350==   /path/to/gdb ./cserv
+==6350== and then give GDB the following command
+==6350==   target remote | /usr/bin/vgdb --pid=6350
+==6350== --pid is optional if only one valgrind process is running
+==6350== 
+--6350-- REDIR: 0x402aa60 (ld-linux-x86-64.so.2:strlen) redirected to 0x580bcec2 (???)
+--6350-- REDIR: 0x402a830 (ld-linux-x86-64.so.2:index) redirected to 0x580bcedc (???)
+--6350-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--6350--    object doesn't have a symbol table
+--6350-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+--6350--    object doesn't have a symbol table
+==6350== WARNING: new redirection conflicts with existing -- ignoring it
+--6350--     old: 0x0402aa60 (strlen              ) R-> (0000.0) 0x580bcec2 ???
+--6350--     new: 0x0402aa60 (strlen              ) R-> (2007.0) 0x0484ee30 strlen
+--6350-- REDIR: 0x4027240 (ld-linux-x86-64.so.2:strcmp) redirected to 0x484fcd0 (strcmp)
+--6350-- REDIR: 0x402afc0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4853840 (mempcpy)
+--6350-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
+--6350--   Considering /usr/lib/debug/.build-id/69/389d485a9793dbe873f0ea2c93e02efaa9aa3d.debug ..
+--6350--   .. build-id is valid
+==6350== WARNING: new redirection conflicts with existing -- ignoring it
+--6350--     old: 0x04913ce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--6350--     new: 0x04913ce0 (memalign            ) R-> (1017.0) 0x0484e050 aligned_alloc
+==6350== WARNING: new redirection conflicts with existing -- ignoring it
+--6350--     old: 0x04913ce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--6350--     new: 0x04913ce0 (memalign            ) R-> (1017.0) 0x0484e020 aligned_alloc
+==6350== WARNING: new redirection conflicts with existing -- ignoring it
+--6350--     old: 0x04913ce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--6350--     new: 0x04913ce0 (memalign            ) R-> (1017.0) 0x0484e050 aligned_alloc
+==6350== WARNING: new redirection conflicts with existing -- ignoring it
+--6350--     old: 0x04913ce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--6350--     new: 0x04913ce0 (memalign            ) R-> (1017.0) 0x0484e020 aligned_alloc
+--6350-- REDIR: 0x49167a0 (libc.so.6:strnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4916a60 (libc.so.6:strpbrk) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4916360 (libc.so.6:strcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4934d50 (libc.so.6:wcsnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917750 (libc.so.6:memset) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49335c0 (libc.so.6:wcslen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917c90 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49333f0 (libc.so.6:wcschr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49162e0 (libc.so.6:index) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49169e0 (libc.so.6:rindex) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917620 (libc.so.6:memmove) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+==6350== Preferring higher priority redirection:
+--6350--     old: 0x04a0e940 (__memcpy_avx_unalign) R-> (2018.0) 0x04850f90 __memcpy_avx_unaligned_erms
+--6350--     new: 0x04a0e940 (__memcpy_avx_unalign) R-> (2018.1) 0x04852880 memmove
+--6350-- REDIR: 0x4933470 (libc.so.6:wcscmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917a60 (libc.so.6:stpncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4933a30 (libc.so.6:wmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49168b0 (libc.so.6:strncmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917af0 (libc.so.6:strcasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49164a0 (libc.so.6:strcspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49334f0 (libc.so.6:wcscpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4916250 (libc.so.6:strcat) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917be0 (libc.so.6:strncasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917500 (libc.so.6:bcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x491f5f0 (libc.so.6:memrchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4919090 (libc.so.6:strchrnul) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4916410 (libc.so.6:strcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917b90 (libc.so.6:strcasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4916720 (libc.so.6:strlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4916950 (libc.so.6:strncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x49179d0 (libc.so.6:stpcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917470 (libc.so.6:memchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4916b80 (libc.so.6:strspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917850 (libc.so.6:mempcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4917b40 (libc.so.6:strncasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4919000 (libc.so.6:rawmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--6350-- REDIR: 0x4a0b790 (libc.so.6:__strrchr_avx2) redirected to 0x484e810 (rindex)
+--6350-- REDIR: 0x4913120 (libc.so.6:malloc) redirected to 0x4848820 (malloc)
+--6350-- REDIR: 0x4913460 (libc.so.6:free) redirected to 0x484b210 (free)
+--6350-- REDIR: 0x4a0b960 (libc.so.6:__strlen_avx2) redirected to 0x484ed10 (strlen)
+==6350== 
+==6350== HEAP SUMMARY:
+==6350==     in use at exit: 0 bytes in 0 blocks
+==6350==   total heap usage: 2 allocs, 2 frees, 33,840 bytes allocated
+==6350== 
+==6350== All heap blocks were freed -- no leaks are possible
+==6350== 
+==6350== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

@@ -37,9 +37,9 @@ __asm__(
     ".text\n"
     "coro_routine_entry:\n"
 #if defined(__x86_64__)
-    "pop %rdi\n"    // pop 出 stack 之後存入 rdi
-    "pop %rcx\n"    // pop 出 stack 之後存入 rcx
-    "call *%rcx\n"  // 呼叫 rcx 站存中存的 function
+    "pop %rdi\n"    // poped out from stack, save into rdi
+    "pop %rcx\n"    // pop ** rcx
+    "call *%rcx\n"  // call rcx function
 #else
 #error "unsupported architecture"
 #endif

@@ -2,15 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "coro/sched.h"
-// #include "coro/switch.h"
-// #include "event.h"
-// #include "internal.h"
-// #include "util/list.h"
-// #include "util/memcache.h"
-// #include "util/rbtree.h"
-// #include "util/system.h"
+#include "coro/switch.h"
+#include "event.h"
+#include "internal.h"
+#include "util/list.h"
+#include "util/memcache.h"
+#include "util/rbtree.h"
+#include "util/system.h"
 
 extern struct coro_schedule sched;
 
@@ -113,7 +114,11 @@ void move_to_inactive_tree(struct coroutine *coro)
     struct timer_node *tmp = memcache_alloc(sched.cache);
     if (unlikely(!tmp)) /* still in active list */
         return;
+
     tmp->root = RB_ROOT;
+    tmp->node.rb_left = NULL;
+    tmp->node.rb_right = NULL;
+    
     tmp->timeout = coro->timeout;
 
     add_to_timer_node(tmp, coro);
@@ -157,8 +162,10 @@ struct coroutine *create_coroutine()
         return NULL;
 
     struct coroutine *coro = malloc(sizeof(struct coroutine));
-    if (unlikely(!coro))
+    if (unlikely(!coro)){
+        free(coro);
         return NULL;
+        }
 
     if (coro_stack_alloc(&coro->stack, sched.stack_bytes)) {
         free(coro);
@@ -264,8 +271,19 @@ int get_recent_timespan()
     return (timespan < 0) ? 0 : timespan;
 }
 
+void schedule_free_handler()
+{
+    coro_stack_free(&sched.current->stack);
+    free(sched.current);
+    coro_stack_free(&sched.main_coro.stack);
+    free(&sched.main_coro);
+
+}
+
 void schedule_cycle()
 {
+    signal(SIGKILL | SIGINT, schedule_free_handler);
+
     for (;;) {
         check_timeout_coroutine();
         run_active_coroutine();

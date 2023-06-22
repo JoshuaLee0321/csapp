@@ -28,7 +28,7 @@ LOG_FILE=build.log
 .SUFFIXES: .o .c
 .c.o:
 	$(VECHO) "  CC\t$@\n"
-	$(Q)$(CC) -o $@ $(CFLAGS) -c -MMD -MF $@.d $< >> $(LOG_FILE) 2>&1
+	$(Q)$(CC) -o $@ $(CFLAGS) -c -MMD -MF $@.d $<
 
 OBJS = \
 	src/util/conf.o \
@@ -55,7 +55,7 @@ deps += $(OBJS:%.o=%.o.d)
 
 $(TARGET): $(OBJS)
 	$(VECHO) "  LD\t$@\n"
-	$(Q)$(CC) -o $@ $^ $(LDFLAGS) >> $(LOG_FILE) 2>&1
+	$(Q)$(CC) -o $@ $^ $(LDFLAGS) 
 # for valgrind 
 ARGS = -s
 ARGS += --vgdb=full --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt
@@ -64,7 +64,7 @@ ARGS += --vgdb=full --leak-check=full --show-leak-kinds=all --track-origins=yes 
 val: 
 	sudo valgrind $(ARGS) ./cserv start
 clean:
-	rm build.log
+
 	$(VECHO) "  Cleaning...\n"
 	$(Q)$(RM) $(TARGET) $(OBJS) $(deps)
 

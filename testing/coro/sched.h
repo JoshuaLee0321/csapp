@@ -65,6 +65,8 @@ struct coro_schedule {
 
 // spinlock_t lock;
 /* add other function as extern */
+
+void schedule_free_handler();
 struct coroutine *find_in_timer(struct timer_node *tm_node, int coro_id);
 void remove_from_timer_node(struct timer_node *tm_node, struct coroutine *coro);
 struct timer_node *find_timer_node(long long timeout);
